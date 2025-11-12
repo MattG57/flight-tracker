@@ -1,0 +1,14 @@
+{
+  "name": "@flight-tracker/core",
+  "version": "0.1.0",
+  "description": "Core data models and storage for Flight Tracker",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "echo \"No tests yet\""
+  },
+  "keywords": ["data-model", "storage"],
+  "license": "MIT"
+}

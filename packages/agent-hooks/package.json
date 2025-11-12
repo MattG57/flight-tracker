@@ -1,0 +1,17 @@
+{
+  "name": "@flight-tracker/agent-hooks",
+  "version": "0.1.0",
+  "description": "Integration hooks for AI agent execution tracking",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "echo \"No tests yet\""
+  },
+  "dependencies": {
+    "@flight-tracker/core": "*"
+  },
+  "keywords": ["agent-integration", "telemetry"],
+  "license": "MIT"
+}

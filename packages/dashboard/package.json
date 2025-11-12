@@ -1,0 +1,15 @@
+{
+  "name": "@flight-tracker/dashboard",
+  "version": "0.1.0",
+  "description": "Analytics dashboard for Flight Tracker",
+  "scripts": {
+    "dev": "echo \"Dashboard dev server - TBD: Next.js or Vite\"",
+    "build": "echo \"Dashboard build - TBD\"",
+    "test": "echo \"No tests yet\""
+  },
+  "dependencies": {
+    "@flight-tracker/core": "*"
+  },
+  "keywords": ["dashboard", "analytics", "visualization"],
+  "license": "MIT"
+}

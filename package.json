@@ -1,0 +1,17 @@
+{
+  "name": "flight-tracker",
+  "version": "1.0.0",
+  "description": "AI Agent Flight Tracking System - Monitor and analyze AI agent execution outcomes",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces"
+  },
+  "keywords": ["ai-agents", "telemetry", "tracking", "analytics"],
+  "author": "",
+  "license": "MIT"
+}
