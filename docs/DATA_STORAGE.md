@@ -272,10 +272,11 @@ async function queryFlights(user: User, permissions: Permissions) {
 └──────┬──────┘
        │ HTTPS
        ▼
-┌─────────────────────┐
-│  Next.js Dashboard  │
-│  (Vercel/Azure)     │
-└──────┬──────────────┘
+┌──────────────────────────────┐
+│  Azure Static Web Apps       │
+│  - Next.js Dashboard         │
+│  - API Routes (Functions)    │
+└──────┬───────────────────────┘
        │
        ├─► GitHub OAuth API
        │   (Authentication)
@@ -307,8 +308,9 @@ async function queryFlights(user: User, permissions: Permissions) {
 ### DuckDB:
 - **Free** (runs in dashboard)
 
-### Next.js on Vercel:
-- **Free tier**: 100GB bandwidth, sufficient for pilot
+### Azure Static Web Apps:
+- **Free tier**: 100GB bandwidth, custom domain, auto-scaling
+- **Integrated Functions**: API routes run as Azure Functions
 
 ## Getting Started
 
@@ -331,35 +333,104 @@ az storage container create \
   --public-access off
 ```
 
-### 2. Configure GitHub OAuth App
+### 2. Deploy Dashboard to Azure Static Web Apps
+
+```bash
+# Create static web app
+az staticwebapp create \
+  --name flight-tracker-dashboard \
+  --resource-group flight-tracker-rg \
+  --location eastus2 \
+  --source https://github.com/MattG57/flight-tracker \
+  --branch main \
+  --app-location "/packages/dashboard" \
+  --api-location "/packages/dashboard/api"
+
+# Get the URL
+az staticwebapp show \
+  --name flight-tracker-dashboard \
+  --resource-group flight-tracker-rg \
+  --query "defaultHostname" -o tsv
+# Output: flight-tracker-dashboard.azurestaticapps.net
+```
+
+### 3. Configure GitHub OAuth App
 
 1. Go to GitHub Settings → Developer settings → OAuth Apps
 2. Create new OAuth App:
    - **Application name**: Flight Tracker
-   - **Homepage URL**: https://your-dashboard.vercel.app
-   - **Authorization callback URL**: https://your-dashboard.vercel.app/api/auth/callback
+   - **Homepage URL**: https://flight-tracker-dashboard.azurestaticapps.net
+   - **Authorization callback URL**: https://flight-tracker-dashboard.azurestaticapps.net/api/auth/callback
 3. Save `CLIENT_ID` and `CLIENT_SECRET`
 
-### 3. Environment Variables
+### 4. Configure Environment Variables
 
-```env
-# .env.local
-AZURE_STORAGE_ACCOUNT=flighttracker
-AZURE_STORAGE_KEY=...
-AZURE_STORAGE_CONTAINER=flight-tracker-data
+```bash
+# Set configuration in Azure Static Web Apps
+az staticwebapp appsettings set \
+  --name flight-tracker-dashboard \
+  --setting-names \
+    AZURE_STORAGE_ACCOUNT=flighttracker \
+    AZURE_STORAGE_KEY="..." \
+    AZURE_STORAGE_CONTAINER=flight-tracker-data \
+    GITHUB_CLIENT_ID="..." \
+    GITHUB_CLIENT_SECRET="..." \
+    JWT_SECRET="..." \
+    AUTHORIZED_ORG=your-github-org \
+    ADMIN_TEAM=flight-tracker-admins
 
-GITHUB_CLIENT_ID=...
-GITHUB_CLIENT_SECRET=...
-JWT_SECRET=... # Generate: openssl rand -base64 32
+# For local development, create .env.local:
+# AZURE_STORAGE_ACCOUNT=flighttracker
+# AZURE_STORAGE_KEY=...
+# AZURE_STORAGE_CONTAINER=flight-tracker-data
+# GITHUB_CLIENT_ID=...
+# GITHUB_CLIENT_SECRET=...
+# JWT_SECRET=... # Generate: openssl rand -base64 32
+# AUTHORIZED_ORG=your-github-org
+# ADMIN_TEAM=flight-tracker-admins
+```
 
-AUTHORIZED_ORG=your-github-org
-ADMIN_TEAM=flight-tracker-admins
+## Deployment Workflow
+
+Azure Static Web Apps automatically deploys when you push to GitHub:
+
+1. Push to `main` branch
+2. GitHub Action triggers (auto-created by Azure)
+3. Builds Next.js dashboard
+4. Deploys to Azure Static Web Apps
+5. API routes become Azure Functions
+
+```yaml
+# .github/workflows/azure-static-web-apps.yml (auto-generated)
+name: Azure Static Web Apps CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build And Deploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "/packages/dashboard"
+          api_location: "/packages/dashboard/api"
 ```
 
 ## Next Steps
 
-- [ ] Implement GitHub OAuth flow
 - [ ] Setup Azure Blob Storage
+- [ ] Deploy to Azure Static Web Apps
+- [ ] Configure GitHub OAuth app
+- [ ] Set environment variables in Azure
+- [ ] Implement GitHub OAuth flow
 - [ ] Create JWT middleware
 - [ ] Build DuckDB query layer with RLS
 - [ ] Add audit logging

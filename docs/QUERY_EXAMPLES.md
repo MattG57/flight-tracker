@@ -13,7 +13,8 @@ This document demonstrates how DuckDB + Azure Blob Storage supports the Flight T
                      │ HTTPS
                      ▼
 ┌─────────────────────────────────────────────────────────────┐
-│              Dashboard (Next.js on Vercel)                  │
+│         Azure Static Web Apps                               │
+│  (Next.js Dashboard + API Routes as Azure Functions)       │
 │                                                              │
 │  ┌──────────────────────────────────────────────────────┐  │
 │  │  API Route: /api/flights/query                       │  │

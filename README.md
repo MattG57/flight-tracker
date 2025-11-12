@@ -47,14 +47,25 @@ npm run build
 - [ ] Integrate with agent execution
 - [ ] Build rudimentary dashboard
 
-## Data Storage
+## Technology Stack
 
-**DuckDB** (embedded analytics engine) + **Azure Blob Storage** (JSONL format)
-- Query cloud storage directly, no database server needed
-- Cost: ~$0.10/month for 30k flights
-- Multi-user support via GitHub OAuth + JWT
+- **Dashboard**: Next.js on Azure Static Web Apps
+- **API**: Azure Functions (Node.js)
+- **Query Engine**: DuckDB (embedded analytics)
+- **Storage**: Azure Blob Storage (JSONL format)
+- **Auth**: GitHub OAuth + JWT
+- **Cost**: Free tier for pilot (~$0/month for 30k flights)
 
 See [docs/DATA_STORAGE.md](docs/DATA_STORAGE.md) for details.
+
+## Deployment
+
+Fully deployed on Azure:
+- Azure Static Web Apps (dashboard + API)
+- Azure Blob Storage (data)
+- GitHub Actions (CI/CD)
+
+See [docs/AZURE_DEPLOYMENT.md](docs/AZURE_DEPLOYMENT.md) for complete deployment guide.
 
 ## Security
 

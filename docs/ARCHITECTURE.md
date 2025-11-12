@@ -67,7 +67,7 @@ dashboard (query and visualize)
 - **Dashboard Framework**: Next.js (React + API routes)
 - **Authentication**: GitHub OAuth
 - **Authorization**: JWT + Row-Level Security
-- **Hosting**: Vercel (dashboard) + Azure (storage)
+- **Hosting**: Azure Static Web Apps (dashboard + API) + Azure Blob Storage (data)
 
 **To Be Decided:**
 - **Charts**: Recharts vs. Chart.js vs. D3
