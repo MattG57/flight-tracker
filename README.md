@@ -43,7 +43,7 @@ npm run build
 ## Iteration 1 Goals
 
 - [x] Establish repo structure
-- [ ] Define flight data structure
+- [x] Define flight data structure
 - [ ] Integrate with agent execution
 - [ ] Build rudimentary dashboard
 

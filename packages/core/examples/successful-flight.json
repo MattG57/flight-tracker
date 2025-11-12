@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "1.0.0",
+  "flightId": "flight-001-bug-fix",
+  "issueNumber": 42,
+  "pilot": {
+    "githubLogin": "mattg57",
+    "displayName": "Matt G"
+  },
+  "goal": {
+    "type": "explicit",
+    "description": "Fix authentication bug preventing users from logging in",
+    "flightPlanFiled": true,
+    "destination": "bug-fix",
+    "isInternational": false
+  },
+  "executionLog": {
+    "duration": {
+      "startTime": "2025-01-15T10:00:00Z",
+      "endTime": "2025-01-15T10:45:00Z",
+      "totalMinutes": 45
+    },
+    "cost": {
+      "copilot": {
+        "tokens": 150000,
+        "estimatedCost": 0.75
+      },
+      "actionsMinutes": 5,
+      "pruCost": 2.5
+    },
+    "reworkRequired": false,
+    "reworkCount": 0,
+    "events": [
+      {
+        "timestamp": "2025-01-15T10:00:00Z",
+        "type": "takeoff",
+        "message": "Flight initiated for issue #42"
+      },
+      {
+        "timestamp": "2025-01-15T10:30:00Z",
+        "type": "progress",
+        "message": "Root cause identified in auth middleware"
+      },
+      {
+        "timestamp": "2025-01-15T10:45:00Z",
+        "type": "landing",
+        "message": "PR #123 created with fix"
+      }
+    ]
+  },
+  "status": "successful",
+  "statusDetails": {
+    "prNumber": 123,
+    "merged": true,
+    "deployed": true,
+    "churned": false
+  },
+  "manualCloseout": {
+    "closedBy": "mattg57",
+    "closedAt": "2025-01-15T11:00:00Z",
+    "notes": "Bug fix deployed successfully to production",
+    "lessonsLearned": "Authentication middleware edge case with OAuth tokens"
+  },
+  "createdAt": "2025-01-15T10:00:00Z",
+  "updatedAt": "2025-01-15T11:00:00Z",
+  "metadata": {
+    "environment": "production",
+    "severity": "high"
+  }
+}

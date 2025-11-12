@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0.0",
+  "flightId": "flight-003-refactor",
+  "issueNumber": 78,
+  "pilot": {
+    "githubLogin": "senior-dev"
+  },
+  "goal": {
+    "type": "implied",
+    "description": "Refactor database layer for better performance",
+    "flightPlanFiled": false,
+    "destination": "refactor",
+    "isInternational": false
+  },
+  "executionLog": {
+    "duration": {
+      "startTime": "2025-01-17T14:00:00Z",
+      "endTime": "2025-01-17T16:30:00Z",
+      "totalMinutes": 150
+    },
+    "cost": {
+      "copilot": {
+        "tokens": 320000,
+        "estimatedCost": 1.60
+      },
+      "actionsMinutes": 8,
+      "pruCost": 5.0
+    },
+    "reworkRequired": false,
+    "reworkCount": 0,
+    "events": [
+      {
+        "timestamp": "2025-01-17T14:00:00Z",
+        "type": "takeoff",
+        "message": "Beginning database refactoring"
+      },
+      {
+        "timestamp": "2025-01-17T16:00:00Z",
+        "type": "progress",
+        "message": "Query optimization complete, running benchmarks"
+      },
+      {
+        "timestamp": "2025-01-17T16:20:00Z",
+        "type": "turbulence",
+        "message": "Deployment to staging failed - connection pool issues",
+        "metadata": {
+          "failureType": "deployment_failure",
+          "environment": "staging"
+        }
+      },
+      {
+        "timestamp": "2025-01-17T16:30:00Z",
+        "type": "emergency_landing",
+        "message": "Flight aborted due to deployment issues"
+      }
+    ]
+  },
+  "status": "failure",
+  "statusDetails": {
+    "prNumber": 167,
+    "merged": false,
+    "deployed": false,
+    "failureReason": "Deployment to staging environment failed due to database connection pool configuration issues",
+    "failureCategory": "deployment_failure"
+  },
+  "manualCloseout": {
+    "closedBy": "senior-dev",
+    "closedAt": "2025-01-17T17:00:00Z",
+    "notes": "Need to revisit connection pool settings and coordination with DevOps",
+    "lessonsLearned": "Complex database changes require better staging environment coordination and pre-deployment validation"
+  },
+  "createdAt": "2025-01-17T14:00:00Z",
+  "updatedAt": "2025-01-17T17:00:00Z",
+  "metadata": {
+    "attemptNumber": 1,
+    "willRetry": true
+  }
+}
