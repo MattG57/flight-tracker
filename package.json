@@ -11,7 +11,15 @@
     "build": "npm run build --workspaces",
     "test": "npm run test --workspaces"
   },
-  "keywords": ["ai-agents", "telemetry", "tracking", "analytics"],
+  "keywords": [
+    "ai-agents",
+    "telemetry",
+    "tracking",
+    "analytics"
+  ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "ajv-cli": "^5.0.0"
+  }
 }

@@ -1,0 +1,264 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/MattG57/flight-tracker/schema/flight-v1.json",
+  "title": "Flight",
+  "description": "Schema for tracking AI agent execution flights with comprehensive telemetry and outcome data",
+  "type": "object",
+  "required": ["schemaVersion", "flightId", "goal", "status", "createdAt"],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "description": "Schema version for backwards compatibility",
+      "const": "1.0.0"
+    },
+    "flightId": {
+      "type": "string",
+      "description": "Unique identifier for the flight",
+      "pattern": "^flight-[a-zA-Z0-9-]+$"
+    },
+    "issueNumber": {
+      "type": "integer",
+      "description": "GitHub issue number associated with this flight",
+      "minimum": 1
+    },
+    "pilot": {
+      "type": "object",
+      "description": "Information about who initiated/piloted the flight",
+      "required": ["githubLogin"],
+      "properties": {
+        "githubLogin": {
+          "type": "string",
+          "description": "GitHub username of the pilot"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Optional display name"
+        }
+      }
+    },
+    "goal": {
+      "type": "object",
+      "description": "Flight Goal/Scope/Objective",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["explicit", "implied"],
+          "description": "Whether the goal was explicitly stated (flight plan filed) or implied"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the flight objective"
+        },
+        "flightPlanFiled": {
+          "type": "boolean",
+          "description": "Whether a formal flight plan was filed",
+          "default": false
+        },
+        "destination": {
+          "type": "string",
+          "description": "What destination/outcome is targeted (e.g., 'bug-fix', 'feature', 'refactor')"
+        },
+        "isInternational": {
+          "type": "boolean",
+          "description": "Whether this is an 'international flight' - complex/cross-cutting changes",
+          "default": false
+        }
+      }
+    },
+    "executionLog": {
+      "type": "object",
+      "description": "Flight Data Recorder (FDR) - Log of execution telemetry",
+      "properties": {
+        "duration": {
+          "type": "object",
+          "description": "Duration metrics",
+          "properties": {
+            "startTime": {
+              "type": "string",
+              "format": "date-time",
+              "description": "When the flight started (ISO 8601)"
+            },
+            "endTime": {
+              "type": "string",
+              "format": "date-time",
+              "description": "When the flight ended (ISO 8601)"
+            },
+            "totalMinutes": {
+              "type": "number",
+              "description": "Total duration in minutes",
+              "minimum": 0
+            }
+          }
+        },
+        "cost": {
+          "type": "object",
+          "description": "Cost tracking",
+          "properties": {
+            "copilot": {
+              "type": "object",
+              "description": "GitHub Copilot costs",
+              "properties": {
+                "tokens": {
+                  "type": "integer",
+                  "description": "Total tokens used",
+                  "minimum": 0
+                },
+                "estimatedCost": {
+                  "type": "number",
+                  "description": "Estimated cost in USD",
+                  "minimum": 0
+                }
+              }
+            },
+            "actionsMinutes": {
+              "type": "integer",
+              "description": "GitHub Actions minutes consumed",
+              "minimum": 0
+            },
+            "pruCost": {
+              "type": "number",
+              "description": "PRU (Plan Resource Units) cost - custom metric",
+              "minimum": 0
+            }
+          }
+        },
+        "reworkRequired": {
+          "type": "boolean",
+          "description": "Whether rework was required during execution"
+        },
+        "reworkCount": {
+          "type": "integer",
+          "description": "Number of times rework was needed",
+          "minimum": 0,
+          "default": 0
+        },
+        "events": {
+          "type": "array",
+          "description": "Timeline of execution events",
+          "items": {
+            "type": "object",
+            "required": ["timestamp", "type"],
+            "properties": {
+              "timestamp": {
+                "type": "string",
+                "format": "date-time",
+                "description": "When the event occurred (ISO 8601)"
+              },
+              "type": {
+                "type": "string",
+                "description": "Event type (e.g., 'takeoff', 'turbulence', 'landing')"
+              },
+              "message": {
+                "type": "string",
+                "description": "Event details"
+              },
+              "metadata": {
+                "type": "object",
+                "description": "Additional event-specific data"
+              }
+            }
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "running",
+        "pending",
+        "pending_successful",
+        "successful",
+        "churn",
+        "failure"
+      ],
+      "description": "Current flight status"
+    },
+    "statusDetails": {
+      "type": "object",
+      "description": "Additional status-specific information",
+      "properties": {
+        "prNumber": {
+          "type": "integer",
+          "description": "Pull request number if status is pending/successful",
+          "minimum": 1
+        },
+        "merged": {
+          "type": "boolean",
+          "description": "Whether the PR was merged"
+        },
+        "deployed": {
+          "type": "boolean",
+          "description": "Whether changes were deployed"
+        },
+        "churned": {
+          "type": "boolean",
+          "description": "Whether changes required churn/rollback"
+        },
+        "churnReason": {
+          "type": "string",
+          "description": "Reason for churn if applicable"
+        },
+        "failureReason": {
+          "type": "string",
+          "description": "Reason for failure if status is failure"
+        },
+        "failureCategory": {
+          "type": "string",
+          "enum": [
+            "requirements_unclear",
+            "technical_complexity",
+            "build_failure",
+            "test_failure",
+            "deployment_failure",
+            "timeout",
+            "resource_constraint",
+            "external_dependency",
+            "other"
+          ],
+          "description": "Category of failure for Pareto analysis"
+        }
+      }
+    },
+    "manualCloseout": {
+      "type": "object",
+      "description": "Manual close-out of the flight plan",
+      "properties": {
+        "closedBy": {
+          "type": "string",
+          "description": "GitHub login of who closed the flight"
+        },
+        "closedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the flight was manually closed (ISO 8601)"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Close-out notes"
+        },
+        "lessonsLearned": {
+          "type": "string",
+          "description": "Key lessons learned from this flight"
+        }
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the flight record was created (ISO 8601)"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the flight record was last updated (ISO 8601)"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional flexible metadata for future extensions",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

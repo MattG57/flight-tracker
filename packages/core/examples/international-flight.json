@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "1.0.0",
+  "flightId": "flight-002-feature-impl",
+  "issueNumber": 56,
+  "pilot": {
+    "githubLogin": "dev-user",
+    "displayName": "Developer User"
+  },
+  "goal": {
+    "type": "explicit",
+    "description": "Implement new dashboard analytics feature",
+    "flightPlanFiled": true,
+    "destination": "feature",
+    "isInternational": true
+  },
+  "executionLog": {
+    "duration": {
+      "startTime": "2025-01-16T09:00:00Z",
+      "endTime": "2025-01-16T12:30:00Z",
+      "totalMinutes": 210
+    },
+    "cost": {
+      "copilot": {
+        "tokens": 450000,
+        "estimatedCost": 2.25
+      },
+      "actionsMinutes": 15,
+      "pruCost": 8.5
+    },
+    "reworkRequired": true,
+    "reworkCount": 2,
+    "events": [
+      {
+        "timestamp": "2025-01-16T09:00:00Z",
+        "type": "takeoff",
+        "message": "Starting feature implementation for issue #56"
+      },
+      {
+        "timestamp": "2025-01-16T10:15:00Z",
+        "type": "turbulence",
+        "message": "Build failures detected, reworking tests",
+        "metadata": {
+          "failureType": "test_failure"
+        }
+      },
+      {
+        "timestamp": "2025-01-16T11:00:00Z",
+        "type": "turbulence",
+        "message": "TypeScript type errors in dashboard component",
+        "metadata": {
+          "failureType": "build_failure"
+        }
+      },
+      {
+        "timestamp": "2025-01-16T12:30:00Z",
+        "type": "landing",
+        "message": "PR #145 created after resolving issues"
+      }
+    ]
+  },
+  "status": "pending",
+  "statusDetails": {
+    "prNumber": 145,
+    "merged": false,
+    "deployed": false
+  },
+  "createdAt": "2025-01-16T09:00:00Z",
+  "updatedAt": "2025-01-16T12:30:00Z",
+  "metadata": {
+    "complexity": "high",
+    "teamSize": 3
+  }
+}
