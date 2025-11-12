@@ -2,42 +2,50 @@
 
 ## Data Lifecycle Strategy
 
-### Pilot Phase (Current)
-- **Storage**: SQLite database (file-based)
-- **Location**: `./data/flights.db` in project root
-- **Dashboard**: Local Next.js/React app reading directly from SQLite
-- **Deployment**: Run locally, no hosting needed
+### Architecture: DuckDB + Cloud Storage
 
-### Advantages of this approach:
-- Zero infrastructure setup
-- Fast iteration
-- No hosting costs
-- Data persists locally
-- Easy backup (just copy .db file)
+Flight Tracker uses **DuckDB** (embedded analytics engine) with **Azure Blob Storage** for scalable, cost-effective data storage.
 
-### Future Scaling Path
+**Key Benefits:**
+- **No database server** - DuckDB is embedded, queries cloud storage directly
+- **Cost effective** - ~$0.10/month for 30k flights (storage + reads)
+- **Serverless** - No infrastructure to manage
+- **Fast analytics** - Columnar storage, parallel processing
+- **Multi-user support** - GitHub OAuth + JWT + row-level security
 
-When ready to scale beyond pilot:
+### Data Flow
 
-1. **Database Migration**
-   - SQLite → PostgreSQL (or MongoDB for flexible schema)
-   - Use Prisma/TypeORM for smooth migration
-   - Host on: Railway, Supabase, or Neon
+```
+Agent Execution
+      ↓
+agent-hooks (capture telemetry)
+      ↓
+core (append JSONL to Azure Blob)
+      ↓
+DuckDB (query Azure Blob directly)
+      ↓
+dashboard (visualize)
+```
 
-2. **Dashboard Hosting Options**
-   - **Option A**: Vercel/Netlify (recommended)
-     - Deploy dashboard as static site + API routes
-     - Free tier sufficient for pilot scale
-   - **Option B**: Docker container
-     - Package dashboard + API + DB
-     - Deploy to Railway, Render, or Fly.io
-   - **Option C**: GitHub Pages + Serverless
-     - Static dashboard on GH Pages
-     - API on AWS Lambda/Cloudflare Workers
+### Storage Format
 
-3. **Data Pipeline** (if needed)
-   - Add event streaming (e.g., webhook → queue → DB)
-   - Separate write path from read path
+**JSONL** (JSON Lines) in Azure Blob Storage:
+```
+azure://flight-tracker-data/
+├── flights/
+│   └── 2024/11/12/flights.jsonl
+└── users/
+    └── access-log.jsonl
+```
+
+### Multi-User Security
+
+**Authentication**: GitHub OAuth
+**Authorization**: JWT tokens with role-based access
+**Encryption**: Azure Blob encryption at rest (AES-256)
+**Access Control**: Time-limited SAS tokens per user
+
+See [DATA_STORAGE.md](./DATA_STORAGE.md) for detailed security architecture.
 
 ## Component Communication
 
@@ -51,11 +59,23 @@ core (write to SQLite)
 dashboard (query and visualize)
 ```
 
-## Technology Choices (To Be Decided)
+## Technology Stack
 
-- **Dashboard Framework**: Next.js vs. Vite+React
-- **ORM**: Prisma vs. Drizzle vs. raw SQL
+**Selected:**
+- **Query Engine**: DuckDB (embedded analytics, queries cloud storage)
+- **Storage**: Azure Blob Storage (JSONL format)
+- **Dashboard Framework**: Next.js (React + API routes)
+- **Authentication**: GitHub OAuth
+- **Authorization**: JWT + Row-Level Security
+- **Hosting**: Vercel (dashboard) + Azure (storage)
+
+**To Be Decided:**
 - **Charts**: Recharts vs. Chart.js vs. D3
 - **UI**: shadcn/ui vs. MUI vs. custom
 
-Next steps: Define the Flight data schema in `packages/core`
+## Next Steps
+
+1. Define Flight data schema in `packages/core`
+2. Implement GitHub OAuth flow
+3. Setup Azure Blob Storage + DuckDB integration
+4. Build dashboard with authentication

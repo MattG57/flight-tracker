@@ -49,8 +49,18 @@ npm run build
 
 ## Data Storage
 
-Currently using SQLite for simplicity during pilot phase. Can migrate to PostgreSQL later if needed.
+**DuckDB** (embedded analytics engine) + **Azure Blob Storage** (JSONL format)
+- Query cloud storage directly, no database server needed
+- Cost: ~$0.10/month for 30k flights
+- Multi-user support via GitHub OAuth + JWT
 
-## Dashboard Hosting
+See [docs/DATA_STORAGE.md](docs/DATA_STORAGE.md) for details.
 
-Local-first approach for pilot. Dashboard runs on localhost and reads from shared data store.
+## Security
+
+- **Authentication**: GitHub OAuth
+- **Authorization**: JWT + role-based access control
+- **Encryption**: Azure Blob (at rest) + HTTPS (in transit)
+- **Row-Level Security**: DuckDB filtering by user/team/org
+
+See [docs/SECURITY.md](docs/SECURITY.md) for security architecture.
