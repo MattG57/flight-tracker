@@ -1,4 +1,5 @@
-const { BlobServiceClient, StorageSharedKeyCredential } = require('@azure/storage-blob');
+const { BlobServiceClient } = require('@azure/storage-blob');
+const { DefaultAzureCredential } = require('@azure/identity');
 
 // Polyfill for crypto if not available in Azure Functions runtime
 if (typeof globalThis.crypto === 'undefined') {
@@ -13,19 +14,31 @@ module.exports = async function (context, req) {
     const accountKey = process.env.AZURE_STORAGE_KEY;
     const containerName = process.env.AZURE_STORAGE_CONTAINER || 'flights';
 
-    context.log('Config:', { accountName, containerName, hasKey: !!accountKey });
-
-    if (!accountName || !accountKey) {
+    if (!accountName) {
       context.res = {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'Storage not configured' })
+        body: JSON.stringify({ error: 'Storage account not configured' })
       };
       return;
     }
 
-    const connectionString = `DefaultEndpointsProtocol=https;AccountName=${accountName};AccountKey=${accountKey};EndpointSuffix=core.windows.net`;
-    const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+    let blobServiceClient;
+    
+    // Try Azure AD first, fall back to shared key if available
+    if (!accountKey) {
+      context.log('Using Azure AD authentication');
+      const credential = new DefaultAzureCredential();
+      blobServiceClient = new BlobServiceClient(
+        `https://${accountName}.blob.core.windows.net`,
+        credential
+      );
+    } else {
+      context.log('Using shared key authentication');
+      const connectionString = `DefaultEndpointsProtocol=https;AccountName=${accountName};AccountKey=${accountKey};EndpointSuffix=core.windows.net`;
+      blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+    }
+    
     const containerClient = blobServiceClient.getContainerClient(containerName);
     
     const flights = [];
