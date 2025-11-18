@@ -1,0 +1,10 @@
+{
+  "configurations": {
+    "dashboard": {
+      "appLocation": ".",
+      "outputLocation": ".next/standalone",
+      "appBuildCommand": "npm run build",
+      "apiLocation": "pages/api"
+    }
+  }
+}

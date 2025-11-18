@@ -9,6 +9,11 @@ coverage/
 # Production
 build/
 dist/
+out/
+
+# Next.js
+.next/
+next-env.d.ts
 
 # Misc
 .DS_Store
@@ -35,6 +40,9 @@ yarn-error.log*
 *.sqlite
 *.sqlite3
 data/
+
+# Azure Configuration (contains secrets)
+azure-config.env
 
 # Package manager
 package-lock.json

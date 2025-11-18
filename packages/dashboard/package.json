@@ -3,13 +3,24 @@
   "version": "0.1.0",
   "description": "Analytics dashboard for Flight Tracker",
   "scripts": {
-    "dev": "echo \"Dashboard dev server - TBD: Next.js or Vite\"",
-    "build": "echo \"Dashboard build - TBD\"",
-    "test": "echo \"No tests yet\""
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
   "dependencies": {
-    "@flight-tracker/core": "*"
+    "@azure/storage-blob": "^12.29.1",
+    "@flight-tracker/core": "*",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.4",
+    "next": "^14.2.33",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.9.3"
   },
-  "keywords": ["dashboard", "analytics", "visualization"],
+  "keywords": [
+    "dashboard",
+    "analytics",
+    "visualization"
+  ],
   "license": "MIT"
 }

@@ -27,10 +27,10 @@ echo -e "${GREEN}✓ All prerequisites met${NC}"
 echo
 
 # Configuration variables
-RESOURCE_GROUP="flight-tracker-rg"
-LOCATION="eastus2"
-STORAGE_ACCOUNT="flighttracker$(date +%s | tail -c 6)"
-CONTAINER_NAME="flight-tracker-data"
+RESOURCE_GROUP="${RESOURCE_GROUP:-flighttracker1}"
+LOCATION="${LOCATION:-eastus2}"
+STORAGE_ACCOUNT="${STORAGE_ACCOUNT:-flighttracker1}"
+CONTAINER_NAME="${CONTAINER_NAME:-flight-tracker-data}"
 
 echo -e "${YELLOW}Configuration:${NC}"
 echo "  Resource Group: $RESOURCE_GROUP"
@@ -49,13 +49,13 @@ SUBSCRIPTION=$(az account show --query "name" -o tsv)
 echo -e "${GREEN}✓ Logged in to subscription: $SUBSCRIPTION${NC}"
 echo
 
-# Create resource group
-echo -e "${YELLOW}Creating resource group...${NC}"
+# Check resource group exists
+echo -e "${YELLOW}Checking resource group...${NC}"
 if az group exists --name $RESOURCE_GROUP | grep -q "true"; then
-    echo -e "${YELLOW}Resource group already exists${NC}"
+    echo -e "${GREEN}✓ Using existing resource group: $RESOURCE_GROUP${NC}"
 else
-    az group create --name $RESOURCE_GROUP --location $LOCATION --output none
-    echo -e "${GREEN}✓ Resource group created${NC}"
+    echo -e "${RED}Error: Resource group $RESOURCE_GROUP not found${NC}"
+    exit 1
 fi
 echo
 
@@ -86,13 +86,30 @@ az storage container create \
 echo -e "${GREEN}✓ Container created${NC}"
 echo
 
-# Upload sample flight
+# Assign Storage Blob Data Contributor role to current user
+echo -e "${YELLOW}Assigning Storage Blob Data Contributor role...${NC}"
+USER_ID=$(az ad signed-in-user show --query id -o tsv)
+STORAGE_ID=$(az storage account show --name $STORAGE_ACCOUNT --resource-group $RESOURCE_GROUP --query id -o tsv)
+
+az role assignment create \
+    --role "Storage Blob Data Contributor" \
+    --assignee "$USER_ID" \
+    --scope "$STORAGE_ID" \
+    --output none 2>/dev/null || echo -e "${YELLOW}Role may already be assigned${NC}"
+
+echo -e "${GREEN}✓ Role assigned${NC}"
+echo -e "${YELLOW}Waiting for role assignment to propagate (30 seconds)...${NC}"
+sleep 30
+echo -e "${GREEN}✓ Ready to upload${NC}"
+echo
+
+# Upload sample flight (using Azure AD authentication)
 echo -e "${YELLOW}Uploading sample flight...${NC}"
 SAMPLE='{"schemaVersion":"1.0.0","flightId":"flight-hello-world","status":"successful","goal":{"type":"explicit","description":"Hello World"},"createdAt":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"}'
 
 echo "$SAMPLE" | az storage blob upload \
     --account-name $STORAGE_ACCOUNT \
-    --account-key "$STORAGE_KEY" \
+    --auth-mode login \
     --container-name $CONTAINER_NAME \
     --name "flights/hello-world.jsonl" \
     --data @- \
@@ -100,6 +117,17 @@ echo "$SAMPLE" | az storage blob upload \
     --output none
 
 echo -e "${GREEN}✓ Sample flight uploaded${NC}"
+echo
+
+# Disable shared key access for security
+echo -e "${YELLOW}Disabling shared key access...${NC}"
+az storage account update \
+    --name $STORAGE_ACCOUNT \
+    --resource-group $RESOURCE_GROUP \
+    --allow-shared-key-access false \
+    --output none
+echo -e "${GREEN}✓ Shared key access disabled${NC}"
+
 echo
 
 # Save config
