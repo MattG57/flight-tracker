@@ -29,6 +29,8 @@ This is a monorepo containing three main packages:
 
 ## Getting Started
 
+### Installation
+
 ```bash
 # Install dependencies
 npm install
@@ -39,6 +41,23 @@ npm run dev
 # Build all packages
 npm run build
 ```
+
+### Azure Setup & Management
+
+Flight Tracker includes management scripts for Azure deployment and configuration:
+
+```bash
+# Setup Azure resources
+./scripts/setup-azure.sh
+
+# Verify Azure setup is correct
+./scripts/verify-azure-setup.sh
+
+# Deploy dashboard to Azure
+./scripts/deploy-dashboard.sh
+```
+
+See [scripts/README-verify.md](scripts/README-verify.md) for detailed verification documentation.
 
 ## Iteration 1 Goals
 
@@ -67,11 +86,44 @@ Fully deployed on Azure:
 
 See [docs/AZURE_DEPLOYMENT.md](docs/AZURE_DEPLOYMENT.md) for complete deployment guide.
 
+### Management Scripts
+
+The `scripts/` directory contains utilities for managing Azure resources:
+
+| Script | Purpose |
+|--------|---------|
+| `setup-azure.sh` | Initialize Azure resources (resource group, storage, static web app) |
+| `verify-azure-setup.sh` | Comprehensive verification of Azure configuration |
+| `deploy-dashboard.sh` | Deploy dashboard to Azure Static Web Apps |
+| `enable-managed-identity.sh` | Enable Azure Managed Identity for storage access |
+| `toggle-auth-method.sh` | Switch between Shared Key and Azure AD authentication |
+| `toggle-shared-key.sh` | Enable/disable shared key access for storage |
+| `create-hello-world-dashboard.sh` | Create a test dashboard deployment |
+
+Run `./scripts/verify-azure-setup.sh` after deployment to ensure everything is configured correctly.
+
 ## Security
 
+Flight Tracker implements comprehensive security measures:
+
+### Authentication & Authorization
 - **Authentication**: GitHub OAuth
-- **Authorization**: JWT + role-based access control
-- **Encryption**: Azure Blob (at rest) + HTTPS (in transit)
+- **Authorization**: JWT + role-based access control (RBAC)
+- **Session Management**: Secure token-based sessions
+
+### Storage Security
+- **Encryption**: Azure Blob Storage encryption at rest (AES-256)
+- **Transport**: HTTPS/TLS for all data in transit
+- **Access Methods**: 
+  - Shared Key authentication (default)
+  - Azure AD/Managed Identity (recommended for production)
+  - Time-limited SAS tokens for user access
 - **Row-Level Security**: DuckDB filtering by user/team/org
 
-See [docs/SECURITY.md](docs/SECURITY.md) for security architecture.
+### Management Tools
+Use the authentication management scripts to configure storage access:
+- `./scripts/toggle-auth-method.sh` - Switch authentication methods
+- `./scripts/enable-managed-identity.sh` - Enable Managed Identity
+- `./scripts/toggle-shared-key.sh` - Control shared key access
+
+See [docs/SECURITY.md](docs/SECURITY.md) for complete security architecture.
